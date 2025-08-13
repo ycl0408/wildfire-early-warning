@@ -1,0 +1,23 @@
+aoi:
+  name: "example_california"
+  bbox: [-124.48, 32.53, -114.13, 42.01]
+time:
+  start_date: "2016-01-01"
+  end_date:   "2024-12-31"
+modis:
+  product: "MOD13Q1"
+  resolution_m: 500
+  step_days: 16
+lags:
+  ndvi:  [0, 16, 32, 48]
+  evi:   [0, 16, 32, 48]
+labels:
+  horizons_days: [14, 28, 42]
+split:
+  train_years: [2016, 2017, 2018, 2019, 2020, 2021, 2022]
+  val_years:   [2023]
+  test_years:  [2024]
+paths:
+  raw: "data/raw"
+  interim: "data/interim"
+  processed: "data/processed"
