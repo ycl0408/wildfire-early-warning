@@ -3,10 +3,10 @@
 /cache/
 /outputs/
 /models/
-/results/
 /reports/
 *.parquet
 *.csv
+!results/*.csv
 *.geojson
 *.nc
 *.tif
