@@ -11,7 +11,7 @@ time:
   end_date:   "2024-12-31"
   fire_season_months: [6, 7, 8, 9, 10, 11]
 modis:
-  product: "MOD13Q1"
+  product: "MOD13A1"   # 500 m, v6.1
   step_days: 16
   max_gap_days: 8
 lags_days: [16, 32, 48]      # labelled 2w / 4w / 6w in feature names
