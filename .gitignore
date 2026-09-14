@@ -1,6 +1,30 @@
+# Data and derived artifacts (never commit)
+/data/
+/cache/
+/outputs/
+/models/
+/results/
+/reports/
+*.parquet
+*.csv
+*.geojson
+*.nc
+*.tif
+*.tiff
+*.npy
+*.joblib
+*.pkl
 
-# Data (do not commit)
-data/
+# Credentials
+.netrc
 
-# Data (do not commit)
-data/
+# Environments and tooling
+.venv/
+venv/
+__pycache__/
+*.pyc
+.vscode/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store

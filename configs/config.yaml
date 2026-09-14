@@ -1,22 +1,26 @@
+# Documentary settings for the Northern Sierra run. Not read by the scripts;
+# paths and parameters are set at the top of each script.
 aoi:
-  name: "example_california"
-  bbox: [-124.48, 32.53, -114.13, 42.01]
+  name: "northern_sierra"
+  bbox_towns: [Susanville, Sonora, Chico, Paradise, South Lake Tahoe, Carson Pass]
+  buffer_m: 10000
+  grid_size_m: 500
+  crs_projected: "EPSG:3310"
 time:
   start_date: "2016-01-01"
   end_date:   "2024-12-31"
+  fire_season_months: [6, 7, 8, 9, 10, 11]
 modis:
   product: "MOD13Q1"
-  resolution_m: 500
   step_days: 16
-lags:
-  ndvi:  [0, 16, 32, 48]
-  evi:   [0, 16, 32, 48]
+  max_gap_days: 8
+lags_days: [16, 32, 48]      # labelled 2w / 4w / 6w in feature names
 labels:
-  horizons_days: [14, 28, 42]
+  target: "label_occurrence"  # same-day FIRMS detection in the cell
 split:
-  train_years: [2016, 2017, 2018, 2019, 2020, 2021, 2022]
-  val_years:   [2023]
-  test_years:  [2024]
+  train_through: "2022-12-31"
+  val: ["2023-01-01", "2023-12-31"]
+  test_from: "2024-01-01"
 paths:
   raw: "data/raw"
   interim: "data/interim"
