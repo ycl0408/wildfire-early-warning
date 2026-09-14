@@ -17,10 +17,14 @@ Final table: **310,242 cell-days**, 148,290 cells, 55 features, ~34% positives (
 | Random Forest | 0.724 | 0.675 | 0.538 |
 | Logistic Regression | 0.662 | 0.546 | 0.522 |
 
-Vegetation lags evaluated: 2, 4, and 6 weeks (one, two, and three 16-day composites back). The label is same-day occurrence; no forward lead time is modeled.
+Vegetation lags evaluated: 2, 4, and 6 weeks (one, two, and three 16-day composites back). The primary label is same-day occurrence.
+
+**Robustness.** Rolling-origin evaluation (test on 2022, 2023, 2024 in turn; `src/eval/robustness_eval.py`) gives HGB test ROC-AUC **0.74 ± 0.07** (0.82 / 0.66 / 0.75); 2023, a quiet fire season, is the weak year for every model. Holding out whole ~20 km spatial tiles (5-fold) scores 0.90 vs. 0.95 for random folds, so the model transfers to unseen locations and the harder generalization is across years, not space.
+
+**Lead time.** Re-labelling each row as "new ignition in this cell within the next H days" (cells with no detection in the prior 30 days; `src/eval/lead_time_eval.py`) gives ROC-AUC 0.71 at 14 days, 0.62 at 28, 0.61 at 42, with PR-AUC 7.9× / 3.3× / 1.8× the base rate. New ignitions are rare in this sample (~0.4%, tens of positives per test year), so these are indicative, not precise. Rows exist only on days with fire activity somewhere in the region, so this measures where the next ignition is during an active period rather than whether one is coming.
 
 ## Data Sources
-NASA FIRMS active-fire archive (MODIS C6.1, VIIRS S-NPP/NOAA-20/NOAA-21); MODIS MOD13Q1 NDVI/EVI 16-day composites with pixel-reliability QA (GeoTIFF); gridMET daily weather via `pygridmet` (tmmx, tmmn, pr, vpd, vs, rmin, rmax, srad); 30 m elevation and MODIS IGBP land cover sampled in Google Earth Engine.
+NASA FIRMS active-fire archive (MODIS C6.1, VIIRS S-NPP/NOAA-20/NOAA-21); MODIS MOD13A1 v6.1 NDVI/EVI 500 m 16-day composites with pixel-reliability QA (GeoTIFF); gridMET daily weather via `pygridmet` (tmmx, tmmn, pr, vpd, vs, rmin, rmax, srad); 30 m elevation and MODIS IGBP land cover sampled in Google Earth Engine.
 
 ## Method
 - Grid: 500 m cells over a Northern Sierra rectangle (Susanville–Sonora–Chico–Lake Tahoe) with a 10 km buffer, EPSG:3310.
@@ -34,6 +38,7 @@ NASA FIRMS active-fire archive (MODIS C6.1, VIIRS S-NPP/NOAA-20/NOAA-21); MODIS 
 scripts/   grid, FIRMS→labels helpers, negative sampling, gridMET fetch, MODIS GeoTIFF extraction, leak patch
 src/features/  composite join, lags, causal anomalies, elevation/land-cover merge
 src/models/model_benchmark.py  trains and evaluates all models, writes outputs/<run>/summary.csv
+src/eval/   rolling-origin + spatial-block robustness checks; forward lead-time experiment
 configs/config.yaml  documentary settings (not read by scripts)
 ```
 `data/`, `cache/`, and `outputs/` are git-ignored.
@@ -45,7 +50,7 @@ python scripts/northern_sierra_grid.py
 python src/features/firms_to_labels.py          # needs data/interim/firms_all_filtered.parquet
 python scripts/sample_nonfire.py
 python scripts/fetch_gridmet.py                 # then copy weather_gridmet_features.parquet → data/processed/modeling_table.parquet
-python scripts/extract_geotiff.py               # needs MOD13Q1 GeoTIFFs in data/raw/modis
+python scripts/extract_geotiff.py               # needs MOD13A1 NDVI/EVI GeoTIFFs in data/raw/modis
 python src/features/ndvi_evi.py
 python scripts/data_leak_patch.py --obs data/processed/modeling_table_with_veg.parquet \
   --veg data/interim/modis_data.parquet --lookback 16 --out data/processed/modeling_table_patched.parquet
